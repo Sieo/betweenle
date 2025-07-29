@@ -23,7 +23,7 @@ function positionWord() {
   }
   nombreDessais.value++
   // store.verifierExistenceMot(wordToTest.value)
-  wordToTest.value = tentative.value.join('')
+  wordToTest.value = tentative.value.join('').toLowerCase()
   wordFound.value = foundWord()
   if (!isInRange(upperWord.value, underWord.value)) {
     formErrors.value = 'Le mot doit être compris entre les mots affichés'
