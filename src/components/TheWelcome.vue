@@ -13,6 +13,7 @@ const formErrors = ref('')
 
 const tentative = ref(['', '', '', '', ''])
 const inputs = ref<HTMLInputElement[]>([])
+const mauvaisesTentatives = ref<string[]>([])
 const nombreDessais = ref(0)
 
 function positionWord() {
@@ -21,13 +22,23 @@ function positionWord() {
     wordFound.value = true
     return
   }
-  nombreDessais.value++
   // store.verifierExistenceMot(wordToTest.value)
   wordToTest.value = tentative.value.join('').toLowerCase()
   wordFound.value = foundWord()
+  if (mauvaisesTentatives.value.findIndex(w => w === wordToTest.value) !== -1) {
+    formErrors.value = 'Le mot a déjà été tenté !'
+    reset()
+    return
+  }
+  mauvaisesTentatives.value.push(wordToTest.value)
+  if (wordFound.value) {
+    tentative.value = wordToFind.value.split('')
+    return
+  }
   if (!isInRange(upperWord.value, underWord.value)) {
     formErrors.value = 'Le mot doit être compris entre les mots affichés'
   } else {
+    nombreDessais.value++
     formErrors.value = ''
     if (isGreater()) {
       upperWord.value = wordToTest.value.toLowerCase()
@@ -35,6 +46,10 @@ function positionWord() {
       underWord.value = wordToTest.value.toLowerCase()
     }
   }
+  reset()
+}
+
+function reset() {
   wordToTest.value = ''
   tentative.value = ['', '', '', '', '']
   inputs.value[0].focus()
@@ -42,21 +57,18 @@ function positionWord() {
 
 // Gestion des entrées
 function onInput(index: number) {
-  if (tentative.value[index].length > 1) {
-    tentative.value[index] = tentative.value[index].slice(0, 1)
-  }
+  tentative.value[index] = tentative.value[index].slice(0, 1)
 
   if (tentative.value[index] && index < 4) {
     inputs.value[index + 1].focus()
   }
 
-  if (index === 4 && tentative.value[index]) {
+  if (tentative.value.every(c => c !== '')) {
     positionWord()
   }
 }
 
 function onBackspace(index: number) {
-  console.log(index, tentative.value[index])
   if (tentative.value[index]) {
     tentative.value[index] = ''
   }
@@ -122,13 +134,16 @@ function isInRange(a: string, b: string) {
           </div>
         </div>
       </div>
-      <h2 v-if="wordFound && nombreDessais < 15" class="congrats">
-        Félicitations ! Vous avez trouvé le mot !
-      </h2>
-      <h2 v-if="wordFound && nombreDessais === 15" class="failed">
-        La prochaine fois sera la bonne !
-      </h2>
     </section>
+    <h2 v-if="formErrors" class="error">
+      {{ formErrors }}
+    </h2>
+    <h2 v-if="wordFound && nombreDessais < 15" class="congrats">
+      Félicitations ! Vous avez trouvé le mot !
+    </h2>
+    <h2 v-if="wordFound && nombreDessais === 15" class="failed">
+      La prochaine fois sera la bonne !
+    </h2>
   </main>
 </template>
 
