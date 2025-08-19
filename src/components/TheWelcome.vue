@@ -152,7 +152,7 @@ function setIndex(i: number) {
         </div>
         <div class="word">
           <input
-            v-for="(char, i) in tentative"
+            v-for="(_, i) in tentative"
             :key="i"
             v-model="tentative[i]"
             @input="onInput(i)"
