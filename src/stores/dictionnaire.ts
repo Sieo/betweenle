@@ -483,6 +483,14 @@ export const useDictionnaireStore = defineStore('dictionnaire', () => {
     'zumba',
   ]
 
+  const alphabet = [...'abcdefghijklmnopqrstuvwxyz']
+
+  function counter(str: string, range: string[]) {
+    const query = `[${range[0]}-${range[1]}]`
+    const regex = new RegExp(query, 'g')
+    return RegExp(regex).exec(str)?.length
+  }
+
   function getAll() {
     return motsDeCinqLettres
   }
@@ -518,5 +526,5 @@ export const useDictionnaireStore = defineStore('dictionnaire', () => {
     }
   }
 
-  return { getAll, getMotRandom, verifierExistenceMot }
+  return { getAll, getMotRandom, verifierExistenceMot, counter, alphabet }
 })

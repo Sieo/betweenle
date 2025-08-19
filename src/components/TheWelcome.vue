@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useStatistiqueStore } from '@/stores/scores'
+import { onMounted, ref } from 'vue'
+import Stats from '../components/Stats.vue'
 import { useDictionnaireStore } from '../stores/dictionnaire.js'
 
 const store = useDictionnaireStore()
@@ -15,14 +17,24 @@ const tentative = ref(['', '', '', '', ''])
 const inputs = ref<HTMLInputElement[]>([])
 const mauvaisesTentatives = ref<string[]>([])
 const nombreDessais = ref(0)
+const index = ref(0)
+const statsStore = useStatistiqueStore()
+
+onMounted(() => {
+  wordFound.value = statsStore.hasPlayedToday()
+  if (wordFound.value) {
+    tentative.value = wordToFind.value.split('')
+    statsStore.popupOpen = true
+  }
+})
 
 function positionWord() {
   if (nombreDessais.value === 15) {
     tentative.value = wordToFind.value.split('')
     wordFound.value = true
+    statsStore.addTodayScore(nombreDessais.value)
     return
   }
-  // store.verifierExistenceMot(wordToTest.value)
   wordToTest.value = tentative.value.join('').toLowerCase()
   wordFound.value = foundWord()
   if (mauvaisesTentatives.value.findIndex(w => w === wordToTest.value) !== -1) {
@@ -33,6 +45,8 @@ function positionWord() {
   mauvaisesTentatives.value.push(wordToTest.value)
   if (wordFound.value) {
     tentative.value = wordToFind.value.split('')
+    statsStore.addTodayScore(nombreDessais.value)
+    displayStats()
     return
   }
   if (!isInRange(upperWord.value, underWord.value)) {
@@ -61,6 +75,7 @@ function onInput(index: number) {
 
   if (tentative.value[index] && index < 4) {
     inputs.value[index + 1].focus()
+    setIndex(index + 1)
   }
 
   if (tentative.value.every(c => c !== '')) {
@@ -91,6 +106,26 @@ function isInRange(a: string, b: string) {
     wordToTest.value.localeCompare(b, 'fr') < 0
   )
 }
+function displayStats() {
+  statsStore.popupOpen = true
+}
+function displayChars(letter: string) {
+  console.log(
+    store.counter(letter.toLowerCase(), [
+      upperWord.value[index.value],
+      underWord.value[index.value],
+    ]),
+  )
+  return (
+    store.counter(letter.toLowerCase(), [
+      upperWord.value[index.value],
+      underWord.value[index.value],
+    ]) !== 1
+  )
+}
+function setIndex(i: number) {
+  index.value = i
+}
 </script>
 
 <template>
@@ -101,14 +136,14 @@ function isInRange(a: string, b: string) {
       Le but du jeu est de trouver le mot mystère compris entre les deux mots.
     </p>
     <p>Vous avez jusqu'a 15 tentatives pour trouver le mot mystère</p>
-    <div class="nb-tentatives">Tentative : {{ nombreDessais }} / 15</div>
+    <div class="nb-tentatives">Tentative : {{ nombreDessais + 1 }} / 15</div>
     <section class="tentatives">
       <div v-for="_ of nombreDessais">
         <div class="bubble"></div>
       </div>
     </section>
     <section>
-      <div class="flex-column">
+      <div class="flex-column center">
         Le mot est compris entre
         <div class="word">
           <div v-for="letter of upperWord" class="letter upper-word">
@@ -122,6 +157,7 @@ function isInRange(a: string, b: string) {
             v-model="tentative[i]"
             @input="onInput(i)"
             @keydown.backspace.prevent="onBackspace(i)"
+            v-on:click="setIndex(i)"
             maxlength="1"
             :disabled="wordFound"
             class="letter uppercase"
@@ -130,6 +166,17 @@ function isInRange(a: string, b: string) {
         </div>
         <div class="word">
           <div v-for="letter of underWord" class="letter under-word">
+            {{ letter }}
+          </div>
+        </div>
+
+        Lettres disponibles :
+        <div class="word">
+          <div
+            v-for="letter of store.alphabet"
+            class="letter alphabet"
+            :class="{ disabled: displayChars(letter) }"
+          >
             {{ letter }}
           </div>
         </div>
@@ -144,7 +191,11 @@ function isInRange(a: string, b: string) {
     <h2 v-if="wordFound && nombreDessais === 15" class="failed">
       La prochaine fois sera la bonne !
     </h2>
+    <button class="display" v-on:click="displayStats()">
+      Afficher les statistiques
+    </button>
   </main>
+  <Stats v-if="statsStore.popupOpen" />
 </template>
 
 <style scoped>
@@ -203,6 +254,13 @@ function isInRange(a: string, b: string) {
     border: 1px solid #6b080d;
     background-color: #861111;
   }
+  .alphabet {
+    border: rgb(117, 112, 112);
+    background-color: rgb(117, 112, 112);
+  }
+  .alphabet.disabled {
+    opacity: 0.5;
+  }
 }
 
 .upper-word {
@@ -225,9 +283,27 @@ function isInRange(a: string, b: string) {
   flex-direction: column;
 }
 
+.center {
+  align-items: center;
+}
+
 .main-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.display {
+  background-color: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid;
+  transition: all 0.5s ease-in-out;
+}
+.display:hover {
+  background-color: orange;
+  transition: all 0.5s ease-in-out;
 }
 </style>
