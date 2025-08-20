@@ -80,6 +80,7 @@ function onInput(index: number) {
 
   if (tentative.value.every(c => c !== '')) {
     positionWord()
+    setIndex(0)
   }
 }
 
@@ -110,12 +111,6 @@ function displayStats() {
   statsStore.popupOpen = true
 }
 function displayChars(letter: string) {
-  console.log(
-    store.counter(letter.toLowerCase(), [
-      upperWord.value[index.value],
-      underWord.value[index.value],
-    ]),
-  )
   return (
     store.counter(letter.toLowerCase(), [
       upperWord.value[index.value],

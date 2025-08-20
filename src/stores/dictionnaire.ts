@@ -486,9 +486,7 @@ export const useDictionnaireStore = defineStore('dictionnaire', () => {
   const alphabet = [...'abcdefghijklmnopqrstuvwxyz']
 
   function counter(str: string, range: string[]) {
-    const query = `[${range[0]}-${range[1]}]`
-    const regex = new RegExp(query, 'g')
-    return RegExp(regex).exec(str)?.length
+    return str >= range[0] && str <= range[1] ? 1 : 0
   }
 
   function getAll() {
