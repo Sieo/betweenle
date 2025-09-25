@@ -111,6 +111,9 @@ function displayStats() {
   statsStore.popupOpen = true
 }
 function displayChars(letter: string) {
+  if (upperWord.value[index.value] > underWord.value[index.value]) {
+    return false
+  }
   return (
     store.counter(letter.toLowerCase(), [
       upperWord.value[index.value],
