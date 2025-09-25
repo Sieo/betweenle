@@ -500,7 +500,8 @@ export const useDictionnaireStore = defineStore('dictionnaire', () => {
       (today.getMonth() + 1) * 100 +
       today.getDate()
     const randomIndex = seed % motsDeCinqLettres.length
-    return motsDeCinqLettres[randomIndex]
+    const suffledTable = motsDeCinqLettres.sort(() => 0.5 - Math.random())
+    return suffledTable[randomIndex]
   }
 
   const API_URL = '/api?action=query&format=json&titles='
