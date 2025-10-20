@@ -169,7 +169,7 @@ function setIndex(i: number) {
         </div>
 
         Lettres disponibles :
-        <div class="word">
+        <div class="word available-letters">
           <div
             v-for="letter of store.alphabet"
             class="letter alphabet"
@@ -261,6 +261,10 @@ function setIndex(i: number) {
   }
 }
 
+.word.available-letters {
+  flex-wrap: wrap;
+}
+
 .upper-word {
   color: green;
   font-size: 1.5rem;
@@ -303,5 +307,11 @@ function setIndex(i: number) {
 .display:hover {
   background-color: orange;
   transition: all 0.5s ease-in-out;
+}
+
+@media only screen and (max-width: 480px) {
+  .flex-column {
+    gap: 8px;
+  }
 }
 </style>

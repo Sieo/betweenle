@@ -95,4 +95,30 @@ function closePopup() {
     opacity: 1;
   }
 }
+
+@media only screen and (max-width: 480px) {
+  .popup {
+    margin: 10px auto;
+    padding: 8px;
+    background: #fff;
+    border-radius: 5px;
+    width: 80%;
+    height: 60%;
+    position: relative;
+    transition: all 5s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    ul {
+      padding-left: 0;
+    }
+  }
+
+  .close {
+    position: absolute;
+    top: 90%;
+    left: 20px;
+  }
+}
 </style>
