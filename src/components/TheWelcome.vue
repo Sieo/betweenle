@@ -16,7 +16,7 @@ const formErrors = ref('')
 const tentative = ref(['', '', '', '', ''])
 const inputs = ref<HTMLInputElement[]>([])
 const mauvaisesTentatives = ref<string[]>([])
-const nombreDessais = ref(0)
+const nombreDessais = ref(1)
 const index = ref(0)
 const statsStore = useStatistiqueStore()
 
@@ -32,7 +32,7 @@ function positionWord() {
   if (nombreDessais.value === 15) {
     tentative.value = wordToFind.value.split('')
     wordFound.value = true
-    statsStore.addTodayScore(nombreDessais.value)
+    statsStore.addTodayScore(nombreDessais.value - 1)
     return
   }
   wordToTest.value = tentative.value.join('').toLowerCase()
@@ -45,7 +45,7 @@ function positionWord() {
   mauvaisesTentatives.value.push(wordToTest.value)
   if (wordFound.value) {
     tentative.value = wordToFind.value.split('')
-    statsStore.addTodayScore(nombreDessais.value)
+    statsStore.addTodayScore(nombreDessais.value - 1)
     displayStats()
     return
   }
@@ -134,7 +134,7 @@ function setIndex(i: number) {
       Le but du jeu est de trouver le mot mystère compris entre les deux mots.
     </p>
     <p>Vous avez jusqu'a 15 tentatives pour trouver le mot mystère</p>
-    <div class="nb-tentatives">Tentative : {{ nombreDessais + 1 }} / 15</div>
+    <div class="nb-tentatives">Tentative : {{ nombreDessais }} / 15</div>
     <section class="tentatives">
       <div v-for="_ of nombreDessais">
         <div class="bubble"></div>
