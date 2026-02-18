@@ -110,10 +110,30 @@ function isInRange(a: string, b: string) {
 function displayStats() {
   statsStore.popupOpen = true
 }
+
 function displayChars(letter: string) {
-  if (upperWord.value[index.value] > underWord.value[index.value]) {
+  // if (upperWord.value[index.value] > underWord.value[index.value]) {
+  //   return false
+  // }
+  // return (
+  //   store.counter(letter.toLowerCase(), [
+  //     upperWord.value[index.value],
+  //     underWord.value[index.value],
+  //   ]) !== 1
+  // )
+
+  // Si la lettre est entre les deux lettres, elle doit être affichée, sinon elle doit être grisée
+  if (upperWord.value[index.value] === underWord.value[index.value]) {
     return false
   }
+
+  if (
+    index.value === 0 &&
+    upperWord.value[index.value] === underWord.value[index.value]
+  ) {
+    return true
+  }
+
   return (
     store.counter(letter.toLowerCase(), [
       upperWord.value[index.value],
@@ -121,6 +141,7 @@ function displayChars(letter: string) {
     ]) !== 1
   )
 }
+
 function setIndex(i: number) {
   index.value = i
 }
